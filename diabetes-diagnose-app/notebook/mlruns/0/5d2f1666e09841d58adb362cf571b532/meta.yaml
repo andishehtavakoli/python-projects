@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/andishetavakkoli/Documents/notebook/github_project/diabetes-diagnose-app/notebook/mlruns/0/5d2f1666e09841d58adb362cf571b532/artifacts
+end_time: 1691013185234
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5d2f1666e09841d58adb362cf571b532
+run_name: traveling-deer-508
+run_uuid: 5d2f1666e09841d58adb362cf571b532
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1691013165875
+status: 3
+tags: []
+user_id: andishetavakkoli

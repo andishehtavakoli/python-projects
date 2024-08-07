@@ -1,0 +1,19 @@
+artifact_path: KNeighborsClassifier
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.9.7
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.0.2
+mlflow_version: 2.5.0
+model_uuid: 222292fc41514e589b66288416869b54
+run_id: 5d2f1666e09841d58adb362cf571b532
+utc_time_created: '2023-08-02 21:52:45.919390'

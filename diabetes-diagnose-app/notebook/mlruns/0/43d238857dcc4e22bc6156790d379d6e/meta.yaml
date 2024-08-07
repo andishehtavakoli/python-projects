@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/andishetavakkoli/Documents/notebook/github_project/diabetes-diagnose-app/notebook/mlruns/0/43d238857dcc4e22bc6156790d379d6e/artifacts
+end_time: 1691006422391
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 43d238857dcc4e22bc6156790d379d6e
+run_name: aged-ram-432
+run_uuid: 43d238857dcc4e22bc6156790d379d6e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1691006378740
+status: 3
+tags: []
+user_id: andishetavakkoli
