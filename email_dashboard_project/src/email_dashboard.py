@@ -29,18 +29,24 @@ with col2:
     
 
 with col3:
+       
     scheduled_date = st.date_input("Scheduled Date", value=datetime.date.today())
     scheduled_time = st.time_input("Scheduled Time") #value=datetime.datetime.now())
+    
+    scheduled_datetime_str = f"{scheduled_date} {scheduled_time}"
+    scheduled_datetime = datetime.datetime.strptime(scheduled_datetime_str, '%Y-%m-%d %H:%M:%S')
     # status = st.text_input("Status", " ")
     
 
 
 send_email_button = st.button("Send Email")
 if send_email_button:
-
-    status = schedule_email(to_email=recipient_mail , subject=subject, body=message_body, scheduled_date=scheduled_date, scheduled_time=scheduled_time)
+    
      # Indest data to database  
-    ingest_data(sender_email, recipient_mail, subject, message_body, scheduled_date, status)
+    ingest_data(sender_email, recipient_mail, subject, message_body, scheduled_datetime, '')
+
+    # status = schedule_email(to_email=recipient_mail , subject=subject, body=message_body, scheduled_date=scheduled_date, scheduled_time=scheduled_time)
+    
 
     
      

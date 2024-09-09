@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Enum, create_engine
+from sqlalchemy import select, Column, Integer, String, Text, DateTime, Enum, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import datetime
@@ -42,3 +42,30 @@ def ingest_data(sender_email, recipient_email, subject, message_body, scheduled_
     
     session.add(new_user)
     session.commit()
+    
+    
+
+
+def get_scheduled_emails():
+    try:
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        # Query the database for all scheduled emails
+        result = session.query(People).all()
+        
+        # Convert the result into a list of dictionaries
+        emails = [{
+            'to_email': email.to_email,
+            'subject': email.subject,
+            'body': email.body,
+            'scheduled_date': email.scheduled_date,
+            'scheduled_time': email.scheduled_time
+        } for email in result]
+        
+        return emails
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+    
