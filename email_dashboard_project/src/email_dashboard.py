@@ -1,31 +1,25 @@
-import streamlit as st
-from db import ingest_data
-from email_smtplib import send_email, schedule_email
-import os
-from dotenv import load_dotenv
 import datetime
+import os
 
+import streamlit as st
+
+from db import ingest_data
 
 
 
 st.title("Sending and Scheduling :blue[Emails] :sunglasses:")
 
-load_dotenv()
 
-# Email configuration
-sender_email = os.getenv(key='sender_email')
-sender_password = os.getenv(key='sender_password')
-    
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    recipient_mail = st.text_input("Recipient Email", " ")
+    to_email = st.text_input("Recipient Email", " ")
     
 
 with col2:
     subject = st.text_input("Subject", " ")
-    message_body = st.text_input("Message Body", " ")
+    body = st.text_input("Message Body", " ")
     
 
 with col3:
@@ -33,19 +27,16 @@ with col3:
     scheduled_date = st.date_input("Scheduled Date", value=datetime.date.today())
     scheduled_time = st.time_input("Scheduled Time") #value=datetime.datetime.now())
     
-    scheduled_datetime_str = f"{scheduled_date} {scheduled_time}"
-    scheduled_datetime = datetime.datetime.strptime(scheduled_datetime_str, '%Y-%m-%d %H:%M:%S')
-    # status = st.text_input("Status", " ")
     
 
 
-send_email_button = st.button("Send Email")
-if send_email_button:
+scheduled_email_button = st.button("Scheduled Email")
+if scheduled_email_button:
     
      # Indest data to database  
-    ingest_data(sender_email, recipient_mail, subject, message_body, scheduled_datetime, '')
+    ingest_data(to_email, subject, body, scheduled_date, scheduled_time)
 
-    # status = schedule_email(to_email=recipient_mail , subject=subject, body=message_body, scheduled_date=scheduled_date, scheduled_time=scheduled_time)
+    st.success('Email Scheduling Successful')
     
 
     
