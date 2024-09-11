@@ -1,58 +1,63 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
-
-import schedule
+import threading
 from loguru import logger
 
 from db import get_future_emails
 from email_smtplib import send_email
 
 
-def schedule_emails():
+def check_and_send_emails():
+    """Check the database for future emails and send them if it's time."""
     future_emails = get_future_emails()
     
     if not future_emails:
         logger.info("No emails to schedule.")
-        return
+        return None
+    
+    now = datetime.now().replace(second=0, microsecond=0)  # Strip seconds and microseconds
+    closest_email_time = None
     
     for email in future_emails:
-        # Combine scheduled date and time into a single datetime object
-        scheduled_datetime = datetime.combine(email.scheduled_date, email.scheduled_time)
+        # Combine scheduled date and time into a single datetime object, ignoring seconds
+        scheduled_datetime = datetime.combine(email['scheduled_date'], email['scheduled_time']).replace(second=0, microsecond=0)
 
-        # Schedule email if the time is in the future
-        now = datetime.now()  # Use datetime from the datetime module
-        if scheduled_datetime > now:
-            # Define the job to send email
-            def job(to=email.to_email, subject=email.subject, body=email.body):
-                send_email(to, subject, body)
-            
-            # Schedule the job at the exact datetime
-            time_diff = (scheduled_datetime - now).total_seconds()
-            logger.info(f"Scheduling email to {email.to_email} at {scheduled_datetime}")
-            schedule.every(time_diff).seconds.do(job)
+        logger.info(f'Time now is: {now} and Scheduled Time is: {scheduled_datetime}')
+        
+        # Check if it's time to send the email (ignoring seconds)
+        if scheduled_datetime <= now:
+            logger.info(f"Sending email to {email['to_email']}")
+            send_email(email['to_email'], email['subject'], email['body'])
         else:
-            logger.info(f"Skipping email to {email.to_email} because the time has passed.")
-            
-            
-def run_scheduler():
-    """Run the scheduler continuously in the background."""
+            # If the scheduled time is in the future, track the closest future email
+            if closest_email_time is None or scheduled_datetime < closest_email_time:
+                closest_email_time = scheduled_datetime
+                logger.info(f"Next closest email is scheduled for {closest_email_time}")
+    
+    return closest_email_time
+
+
+def schedule_dynamic_check():
+    """Dynamically schedule checks based on the next email time."""
     while True:
-        schedule.run_pending()
-        time.sleep(1)
-        
-        
-        
+        closest_email_time = check_and_send_emails()
+        if closest_email_time:
+            now = datetime.now().replace(second=0, microsecond=0)
+            sleep_duration = (closest_email_time - now).total_seconds()
+            
+            # Ensure we don't sleep for a negative or too small interval
+            if sleep_duration > 0:
+                logger.info(f"Waiting {sleep_duration:.2f} seconds until next email at {closest_email_time}")
+                time.sleep(sleep_duration)
+            else:
+                logger.info(f"Scheduled time {closest_email_time} is in the past, checking again immediately.")
+        else:
+            logger.info("No future emails found. Checking again in 10 seconds.")
+            time.sleep(10)  # Check again after 10 seconds if no future emails
+
+
 if __name__ == '__main__':
-    # Schedule emails and start the scheduler
-    schedule_emails()
-    run_scheduler()
-
-
-
-
-
-
-
-
-
+    # Start the dynamic email scheduler
+    logger.info("Starting the dynamic email scheduler...")
+    schedule_dynamic_check()
 
