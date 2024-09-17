@@ -3,7 +3,7 @@ import time
 import threading
 from loguru import logger
 
-from db import get_future_emails
+from db import get_future_emails, session, EmailSchedule  # Import session and EmailSchedule to update statuses
 from email_smtplib import send_email
 
 
@@ -24,10 +24,20 @@ def check_and_send_emails():
 
         logger.info(f'Time now is: {now} and Scheduled Time is: {scheduled_datetime}')
         
-        # Check if it's time to send the email (ignoring seconds)
-        if scheduled_datetime <= now:
-            logger.info(f"Sending email to {email['to_email']}")
-            send_email(email['to_email'], email['subject'], email['body'])
+        # Check if it's time to send the email (ignoring seconds) and the email is pending or failed
+        if scheduled_datetime <= now and email['status'] in ['pending', 'failed']:
+            try:
+                logger.info(f"Sending email to {email['to_email']}")
+                send_email(email['to_email'], email['subject'], email['body'])
+                
+                # Update status to 'sent' after successful send
+                update_email_status(email['id'], 'sent')
+                logger.info(f"Email sent to {email['to_email']} and status updated to 'sent'")
+            except Exception as e:
+                # Log the error and update status to 'failed'
+                logger.error(f"Failed to send email to {email['to_email']}. Error: {str(e)}")
+                update_email_status(email['id'], 'failed')
+                logger.info(f"Email status updated to 'failed' for {email['to_email']}")
         else:
             # If the scheduled time is in the future, track the closest future email
             if closest_email_time is None or scheduled_datetime < closest_email_time:
@@ -35,6 +45,14 @@ def check_and_send_emails():
                 logger.info(f"Next closest email is scheduled for {closest_email_time}")
     
     return closest_email_time
+
+
+def update_email_status(email_id, new_status):
+    """Update the status of an email in the database."""
+    email_record = session.query(EmailSchedule).filter(EmailSchedule.id == email_id).first()
+    if email_record:
+        email_record.status = new_status
+        session.commit()
 
 
 def schedule_dynamic_check():
@@ -60,4 +78,3 @@ if __name__ == '__main__':
     # Start the dynamic email scheduler
     logger.info("Starting the dynamic email scheduler...")
     schedule_dynamic_check()
-

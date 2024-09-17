@@ -19,6 +19,7 @@ class EmailSchedule(Base):
     body = Column(String, nullable=False)
     scheduled_date = Column(Date, nullable=False)
     scheduled_time = Column(Time, nullable=False)
+    status = Column(String, nullable=False)
 
 # Database connection setup (PostgreSQL)
 DATABASE_URL = "postgresql://postgres:postgres@localhost/postgres"
@@ -30,13 +31,14 @@ session = Session()
 Base.metadata.create_all(engine)
 
 
-def ingest_data(to_email, subject, body, scheduled_date, scheduled_time):
+def ingest_data(to_email, subject, body, scheduled_date, scheduled_time, status):
     new_user = EmailSchedule(
         to_email=to_email, 
         subject=subject, 
         body=body,
         scheduled_date=scheduled_date, 
         scheduled_time=scheduled_time, 
+        status = status
        )
     
     session.add(new_user)
@@ -44,17 +46,15 @@ def ingest_data(to_email, subject, body, scheduled_date, scheduled_time):
     
     
 def get_future_emails():
-    # Get the current date and time
-    now = datetime.datetime.now()
 
-    # Query the database for all emails scheduled in the future
+    # Query the database for all emails scheduled in the future with status 'pending' or 'failed'
     future_emails = session.query(EmailSchedule).filter(
-        (EmailSchedule.scheduled_date + EmailSchedule.scheduled_time) > now
+        EmailSchedule.status.in_(['pending', 'failed'])  # Filter for 'pending' or 'failed' status
     ).all()
 
     # Check if there are any future emails
     if future_emails:
-        # Create a list of dictionaries with email data
+        # Create a list of dictionaries with email data including status
         email_list = [
             {
                 "id": email.id,
@@ -62,15 +62,40 @@ def get_future_emails():
                 "subject": email.subject,
                 "body": email.body,
                 "scheduled_date": email.scheduled_date,
-                "scheduled_time": email.scheduled_time
+                "scheduled_time": email.scheduled_time,
+                "status": email.status  # Include the status field
             }
             for email in future_emails
         ]
         return email_list
     else:
         return []
+
     
-    
+def get_emails():
+
+    # Query the database for all emails scheduled in the future with status 'pending' or 'failed'
+    all_emails = session.query(EmailSchedule).all()
+
+
+    # Check if there are any future emails
+    if all_emails:
+        # Create a list of dictionaries with email data including status
+        email_list = [
+            {
+                "id": email.id,
+                "to_email": email.to_email,
+                "subject": email.subject,
+                "body": email.body,
+                "scheduled_date": email.scheduled_date,
+                "scheduled_time": email.scheduled_time,
+                "status": email.status  # Include the status field
+            }
+            for email in all_emails
+        ]
+        return email_list
+    else:
+        return []    
 
 
 
