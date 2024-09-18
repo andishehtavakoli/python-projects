@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       sender_email: 'andishehtavakoli@gmail.com'
-      sender_password: 'iwma kbmf uqri wyrm'
+      sender_password: ''
 
     depends_on:
       - postgres
