@@ -5,6 +5,8 @@ import schedule
 from sqlalchemy import Column, Date, Integer, String, Time, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
 
 # Define your SQLAlchemy base and model
 Base = declarative_base()
@@ -20,9 +22,17 @@ class EmailSchedule(Base):
     scheduled_date = Column(Date, nullable=False)
     scheduled_time = Column(Time, nullable=False)
     status = Column(String, nullable=False)
+    
+load_dotenv()    
+    
+username = os.getenv(key='username')
+password = os.getenv(key='password')
+host = os.getenv(key='host')
+port = os.getenv(key='port')
+dbname = os.getenv(key='dbname')
 
 # Database connection setup (PostgreSQL)
-DATABASE_URL = "postgresql://postgres:postgres@localhost/postgres"
+DATABASE_URL = f"postgresql://{username}:{password}@{host}/{dbname}"
 engine = create_engine(DATABASE_URL, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()

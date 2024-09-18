@@ -3,8 +3,8 @@ import time
 import threading
 from loguru import logger
 
-from db import get_future_emails, session, EmailSchedule  # Import session and EmailSchedule to update statuses
-from email_smtplib import send_email
+from src.db import get_future_emails, session, EmailSchedule  # Import session and EmailSchedule to update statuses
+from src.email_smtplib import send_email
 
 
 def check_and_send_emails():

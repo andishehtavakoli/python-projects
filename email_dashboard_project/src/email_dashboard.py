@@ -4,7 +4,7 @@ import pandas as pd
 
 import streamlit as st
 
-from db import ingest_data, get_emails
+from src.db import ingest_data, get_emails
 
 
 st.image('https://tasktak.com/static/media/web-banner.f09d0a107ce1b0f7532c.png', width=300)
