@@ -25,11 +25,11 @@ class EmailSchedule(Base):
     
 load_dotenv()    
     
-username = os.getenv(key='username')
-password = os.getenv(key='password')
-host = os.getenv(key='host')
-port = os.getenv(key='port')
-dbname = os.getenv(key='dbname')
+username = os.getenv(key='POSTGRES_USER')
+password = os.getenv(key='POSTGRES_PASSWORD')
+host = os.getenv(key='POSTGRES_HOST')
+port = os.getenv(key='POSTGRES_PORT')
+dbname = os.getenv(key='POSTGRES_DB')
 
 # Database connection setup (PostgreSQL)
 DATABASE_URL = f"postgresql://{username}:{password}@{host}/{dbname}"
