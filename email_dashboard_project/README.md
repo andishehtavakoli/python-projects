@@ -73,10 +73,8 @@ pip install -r requirements.txt
 Update the `.env` file with your email service credentials (e.g., Gmail, Outlook). It should contain:
 
 ```
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-email-password
+sender_email =your-email@gmail.com
+sender_password=your-email-password
 ```
 
 ### 6. Run the Streamlit Dashboard

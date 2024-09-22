@@ -49,12 +49,17 @@ def highlight_column_with_style(column_name):
         return ['background-color: yellow; color: black' if s.name == column_name else '' for _ in s]
     return highlight
 
-email_df = pd.DataFrame(get_emails())
-email_df.drop(columns=['body', 'id'], inplace=True)
+if get_emails():
+    email_df = pd.DataFrame(get_emails())
 
-# Applying the style to the DataFrame
-styled_email_df = email_df.style.apply(highlight_column_with_style('status'), axis=0)
-st.dataframe(styled_email_df)  
+    email_df.drop(columns=['body', 'id'], inplace=True)
+
+    # Applying the style to the DataFrame
+    styled_email_df = email_df.style.apply(highlight_column_with_style('status'), axis=0)
+    st.dataframe(styled_email_df)  
+    
+else:
+    st.info('No Email Found')
 
     
      

@@ -2,10 +2,13 @@ from datetime import datetime, timedelta
 import time
 import threading
 from loguru import logger
+import pytz
 
 from src.db import get_future_emails, session, EmailSchedule  # Import session and EmailSchedule to update statuses
 from src.email_smtplib import send_email
 
+# Assuming your project needs the Iran Standard Time zone.
+IRAN_TZ = pytz.timezone('Asia/Tehran')
 
 def check_and_send_emails():
     """Check the database for future emails and send them if it's time."""
@@ -15,12 +18,13 @@ def check_and_send_emails():
         logger.info("No emails to schedule.")
         return None
     
-    now = datetime.now().replace(second=0, microsecond=0)  # Strip seconds and microseconds
+    now = datetime.now(IRAN_TZ).replace(second=0, microsecond=0)  # Strip seconds and microseconds and ensure correct time zone
     closest_email_time = None
     
     for email in future_emails:
         # Combine scheduled date and time into a single datetime object, ignoring seconds
         scheduled_datetime = datetime.combine(email['scheduled_date'], email['scheduled_time']).replace(second=0, microsecond=0)
+        scheduled_datetime = IRAN_TZ.localize(scheduled_datetime)  # Localize to Iran Standard Time
 
         logger.info(f'Time now is: {now} and Scheduled Time is: {scheduled_datetime}')
         
@@ -60,7 +64,7 @@ def schedule_dynamic_check():
     while True:
         closest_email_time = check_and_send_emails()
         if closest_email_time:
-            now = datetime.now().replace(second=0, microsecond=0)
+            now = datetime.now(IRAN_TZ).replace(second=0, microsecond=0)
             sleep_duration = (closest_email_time - now).total_seconds()
             
             # Ensure we don't sleep for a negative or too small interval
