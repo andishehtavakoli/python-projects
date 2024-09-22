@@ -1,5 +1,7 @@
 # Email Dashboard Project
 
+<img src='https://cdn.intheloop.io/blog/wp-content/uploads/2019/03/loop-email-shared-inbox-feature.jpg'>
+
 This project is designed to send scheduled emails using a PostgreSQL database, Docker, and Python's `smtplib`. The user interface (UI) for managing email schedules is built with Streamlit. The main module responsible for sending emails is `run.py`.
 
 ## Features
